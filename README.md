@@ -75,8 +75,9 @@ Le survivant reçoit 1/4 en pleine propriété et 3/4 en usufruit. Les enfants r
 - JavaScript natif
 
 
+
 ## Tests unitaires
-Des tests unitaires ont été ajoutés pour valider la logique des calculs fiscaux.
+Des tests unitaires ont été ajoutés pour valider la logique des calculs fiscaux et garantir la fiabilité du simulateur.
 
 ### Structure
 - Les fonctions de calcul (`calculerImpot`, `getValeurUsufruit`) sont extraites dans le fichier `calculs.js`.
@@ -86,7 +87,13 @@ Des tests unitaires ont été ajoutés pour valider la logique des calculs fisca
 1. Installer les dépendances : `npm install`
 2. Lancer les tests : `npm test`
 
-Les tests vérifient la validité des calculs d'impôt et de la valeur de l'usufruit selon les barèmes officiels.
+### Couverture des tests
+La suite de tests couvre :
+- La vérification du calcul de la valeur de l'usufruit selon l'âge du survivant.
+- Le calcul des droits de succession pour différentes bases taxables et tranches du barème fiscal.
+- Les 4 options du survivant (100% usufruit, 1/4 pleine propriété, 1/3 pleine propriété, 1/4 PP + 3/4 usufruit) avec des exemples pédagogiques, en simulant les cas standards et en vérifiant que les droits sont bien nuls lorsque l'abattement est supérieur à la part taxable.
+
+Ces tests garantissent que le simulateur respecte les règles fiscales et donne des résultats fiables pour les cas courants.
 
 ## Pour aller plus loin
 - Ajouter la gestion de plusieurs enfants ou d'autres cas familiaux.
