@@ -10,6 +10,15 @@ describe('getValeurUsufruit', () => {
     test('Usufruit 91 ans = 10%', () => {
         expect(getValeurUsufruit(91)).toBe(0.10);
     });
+        test('Usufruit âge négatif = 0.90', () => {
+            expect(getValeurUsufruit(-5)).toBe(0.90);
+        });
+        test('Usufruit âge très élevé = 0.10', () => {
+            expect(getValeurUsufruit(150)).toBe(0.10);
+        });
+        test('Usufruit âge non numérique = 0.90', () => {
+            expect(getValeurUsufruit(NaN)).toBe(0.90);
+        });
 });
 
 describe('calculerImpot', () => {
@@ -25,6 +34,15 @@ describe('calculerImpot', () => {
     test('Base taxable 1000000', () => {
         expect(calculerImpot(1000000)).toBeCloseTo(252678);
     });
+        test('Base taxable négative = 0', () => {
+            expect(calculerImpot(-100)).toBe(0);
+        });
+        test('Base taxable très élevée', () => {
+            expect(calculerImpot(100000000)).toBeGreaterThan(0);
+        });
+        test('Base taxable non numérique = 0', () => {
+            expect(calculerImpot(NaN)).toBe(0);
+        });
 });
 
 describe('Options du survivant - exemples pédagogiques', () => {
