@@ -11,6 +11,7 @@ const baremeImpot = [
 ];
 
 function getValeurUsufruit(age) {
+    if (isNaN(age)) return 0.90;
     if (age <= 20) return 0.90;
     if (age <= 30) return 0.80;
     if (age <= 40) return 0.70;
