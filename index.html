@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulateur de Droits de Succession</title>
+    <!-- Chargement de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Police Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Style pour les tables de résultats */
+        .results-table th, .results-table td {
+            border: 1px solid #e2e8f0;
+            padding: 8px;
+            text-align: right;
+        }
+        .results-table th {
+            background-color: #f8fafc;
+            text-align: left;
+        }
+        .highlight-green {
+            background-color: #dcfce7;
+            color: #166534;
+            font-weight: bold;
+        }
+        .highlight-red {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center py-12 px-4">
+
+    <div class="max-w-5xl w-full bg-white shadow-xl rounded-lg p-8">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-8">Simulateur de Droits de Succession</h1>
+        
+        <!-- Section des Entrées -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <!-- Colonne 1: Patrimoine -->
+            <div class="space-y-4">
+                <h2 class="text-xl font-semibold text-gray-700">1. Patrimoine</h2>
+                <div>
+                    <label for="communaute" class="block text-sm font-medium text-gray-600">Communauté</label>
+                    <input type="number" id="communaute" value="0" class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label for="propreM" class="block text-sm font-medium text-gray-600">Propre Monsieur</label>
+                    <input type="number" id="propreM" value="0" class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label for="propreMme" class="block text-sm font-medium text-gray-600">Propre Madame</label>
+                    <input type="number" id="propreMme" value="0" class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                </div>
+            </div>
+
+            <!-- Colonne 2: Hypothèses Enfants -->
+            <div class="space-y-4">
+                <h2 class="text-xl font-semibold text-gray-700">2. Hypothèses (2 enfants)</h2>
+                <div>
+                    <label for="donationE1" class="block text-sm font-medium text-gray-600">Donation Enfant 1 (<15a)</label>
+                    <input type="number" id="donationE1" value="20000" class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label for="donationE2" class="block text-sm font-medium text-gray-600">Donation Enfant 2 (<15a)</label>
+                    <input type="number" id="donationE2" value="20000" class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label for="ageMme" class="block text-sm font-medium text-gray-600">Âge Madame (si 1er survivant)</label>
+                    <input type="number" id="ageMme" value="75" class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                 <div>
+                    <label for="ageM" class="block text-sm font-medium text-gray-600">Âge Monsieur (si 1er survivant)</label>
+                    <input type="number" id="ageM" value="78" class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                </div>
+            </div>
+            
+            <!-- Colonne 3: Option du Survivant -->
+            <div class="space-y-4">
+                <h2 class="text-xl font-semibold text-gray-700">3. Option du Survivant</h2>
+                <div>
+                    <label for="optionSurvivant" class="block text-sm font-medium text-gray-600">Choix au 1er décès</label>
+                    <select id="optionSurvivant" class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white">
+                        <option value="100_USU">100% Usufruit (Défaut)</option>
+                        <option value="1_4_PP">1/4 Pleine Propriété (Légal)</option>
+                        <option value="1_3_PP">1/3 Pleine Propriété (Donation)</option>
+                        <option value="1_4_PP_3_4_USU">1/4 PP + 3/4 Usufruit (Donation)</option>
+                    </select>
+                </div>
+                 <div class="text-sm text-gray-500 pt-2">
+                    <p>Les options "Donation" ne sont valables que si une "Donation au Dernier Vivant" a été signée.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bouton de Calcul -->
+        <div class="text-center mb-4">
+            <button id="calculateBtn" class="w-full md:w-auto bg-blue-600 text-white font-bold py-3 px-10 rounded-lg shadow-md hover:bg-blue-700 transition duration-300">
+                Calculer les scénarios
+            </button>
+        </div>
+
+        <!-- Lien pour afficher les hypothèses -->
+        <div class="text-center mb-8">
+            <button id="toggleHypotheses" class="text-sm text-blue-600 hover:underline focus:outline-none">
+                Afficher/Masquer les hypothèses de calcul
+            </button>
+        </div>
+
+        <!-- Section des Hypothèses (cachée par défaut) -->
+        <div id="hypotheses" class="hidden bg-gray-50 p-6 rounded-lg border border-gray-200 mb-8 space-y-2">
+            <h3 class="text-lg font-semibold text-gray-700 mb-3">Hypothèses de calcul :</h3>
+            <ul class="list-disc list-inside text-gray-600 space-y-1 text-sm">
+                <li><strong>Option du survivant :</strong> Le simulateur calcule l'impôt en fonction de l'option choisie dans le menu déroulant.</li>
+                <li><strong>Exonération du conjoint :</strong> Le conjoint survivant est toujours exonéré de droits sur la part qu'il reçoit.</li>
+                <li><strong>Nombre d'enfants :</strong> Calcul basé sur exactement 2 enfants (partage 50/50 de la part taxable).</li>
+                <li><strong>Abattement de base :</strong> 100 000 € par enfant et par parent.</li>
+                <li><strong>Donations :</strong> Les donations saisies sont supposées dater de moins de 15 ans et réduisent l'abattement.</li>
+                <li><strong>Barème Usufruit/NP :</strong> Utilisation du barème fiscal (Art. 669 CGI) basé sur l'âge du survivant (pour les options en usufruit).</li>
+                <li><strong>Barème d'impôt :</strong> Utilisation du barème progressif en ligne directe (Art. 777 CGI).</li>
+                <li><strong>Passif (Dettes) :</strong> Le simulateur ne déduit pas les dettes (calcul sur actif brut).</li>
+                <li><strong>Extinction de l'usufruit :</strong> Au second décès, l'usufruit (si applicable) s'éteint sans frais supplémentaires.</li>
+                <li><strong>Absence de testament :</strong> Partage légal 50/50 entre les enfants (hors part du conjoint).</li>
+            </ul>
+        </div>
+
+        <!-- Section des Résultats -->
+        <div id="results" class="space-y-8">
+            <!-- Les résultats seront injectés ici par JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        // --- CONSTANTES FISCALES ---
+
+        // Barème de l'impôt (Art. 777 CGI). Trié par max croissant.
+        const baremeImpot = [
+            { max: 8072,      taux: 0.05, deduction: 0 },
+            { max: 12109,     taux: 0.10, deduction: 404 },
+            { max: 15932,     taux: 0.15, deduction: 1009 },
+            { max: 552324,    taux: 0.20, deduction: 1806 },
+            { max: 902838,    taux: 0.30, deduction: 57038 },
+            { max: 1805677,   taux: 0.40, deduction: 147322 },
+            { max: Infinity,  taux: 0.45, deduction: 237606 }
+        ];
+
+        // --- FONCTIONS HELPERS ---
+
+        /**
+         * Récupère la valeur de l'USUFRUIT en % en fonction de l'âge de l'usufruitier
+         * @param {number} age - L'âge de l'usufruitier
+         * @returns {number} - Le pourcentage de l'Usufruit (ex: 0.30 pour 71-80 ans)
+         */
+        function getValeurUsufruit(age) {
+            // Le barème fiscal donne la valeur de l'usufruit. 
+            // 71-80 ans -> Usufruit 30%
+            if (age <= 20) return 0.90;
+            if (age <= 30) return 0.80;
+            if (age <= 40) return 0.70;
+            if (age <= 50) return 0.60;
+            if (age <= 60) return 0.50;
+            if (age <= 70) return 0.40;
+            if (age <= 80) return 0.30; // -> Usufruit 30%
+            if (age <= 90) return 0.20;
+            return 0.10; // 91 ans et plus
+        }
+        
+        /**
+         * Calcule les droits de succession pour une base taxable donnée
+         * @param {number} baseTaxable - Le montant après abattement
+         * @returns {number} - Le montant de l'impôt
+         */
+        function calculerImpot(baseTaxable) {
+            if (baseTaxable <= 0) return 0;
+            // On utilise la formule (Base * Taux) - Somme à déduire
+            for (const tranche of baremeImpot) {
+                if (baseTaxable <= tranche.max) {
+                    return (baseTaxable * tranche.taux) - tranche.deduction;
+                }
+            }
+            return 0; // Ne devrait jamais arriver
+        }
+        
+        /**
+         * Formate un nombre en devise EUR
+         */
+        function formatCurrency(value) {
+            return value.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', minimumFractionDigits: 0, maximumFractionDigits: 0 });
+        }
+        
+        function formatPercent(value) {
+            return (value * 100).toFixed(0) + '%';
+        }
+
+        // --- FONCTIONS DE CALCUL PAR OPTION ---
+
+        /**
+         * Calcule les droits pour l'option 100% Usufruit
+         */
+        function calc_100_USU(actifM, actifMme, abattE1, abattE2, ageMme, ageM) {
+            let s1 = {}, s2 = {};
+
+            // --- Scénario 1 : M. décède 1er ---
+            const s1_valeurUsufruit = getValeurUsufruit(ageMme);
+            const s1_valeurNP = 1 - s1_valeurUsufruit;
+            const s1_partTaxableE_S1 = (actifM * s1_valeurNP) / 2;
+            const s1_baseTaxableE1_S1 = Math.max(0, s1_partTaxableE_S1 - abattE1);
+            const s1_baseTaxableE2_S1 = Math.max(0, s1_partTaxableE_S1 - abattE2);
+            const s1_droitsE1_S1 = calculerImpot(s1_baseTaxableE1_S1);
+            const s1_droitsE2_S1 = calculerImpot(s1_baseTaxableE2_S1);
+            
+            const s1_partTaxableE_S2 = actifMme / 2; // PP
+            const s1_baseTaxableE1_S2 = Math.max(0, s1_partTaxableE_S2 - abattE1);
+            const s1_baseTaxableE2_S2 = Math.max(0, s1_partTaxableE_S2 - abattE2);
+            const s1_droitsE1_S2 = calculerImpot(s1_baseTaxableE1_S2);
+            const s1_droitsE2_S2 = calculerImpot(s1_baseTaxableE2_S2);
+
+            s1 = {
+                titre: `Scénario 1 : Monsieur décède en premier (Survivante Mme, ${ageMme} ans)`,
+                etape1_titre: `1. Droits Succ. M. (NP ${formatPercent(s1_valeurNP)})`,
+                etape1_detail_part: `Part taxable (NP) par enfant: ${formatCurrency(s1_partTaxableE_S1)}`,
+                etape1_detail_e1: `${formatCurrency(s1_partTaxableE_S1)} - ${formatCurrency(abattE1)} (abatt.) = ${formatCurrency(s1_baseTaxableE1_S1)} (base) -> <strong>${formatCurrency(s1_droitsE1_S1)} (droits)</strong>`,
+                etape1_detail_e2: `${formatCurrency(s1_partTaxableE_S1)} - ${formatCurrency(abattE2)} (abatt.) = ${formatCurrency(s1_baseTaxableE2_S1)} (base) -> <strong>${formatCurrency(s1_droitsE2_S1)} (droits)</strong>`,
+                etape1_droitsE1: s1_droitsE1_S1,
+                etape1_droitsE2: s1_droitsE2_S1,
+                etape1_total: s1_droitsE1_S1 + s1_droitsE2_S1,
+
+                etape2_titre: `2. Droits Succ. Mme (PP sur ${formatCurrency(actifMme)})`,
+                etape2_detail_part: `Part taxable (PP) par enfant: ${formatCurrency(s1_partTaxableE_S2)}`,
+                etape2_detail_e1: `${formatCurrency(s1_partTaxableE_S2)} - ${formatCurrency(abattE1)} (abatt.) = ${formatCurrency(s1_baseTaxableE1_S2)} (base) -> <strong>${formatCurrency(s1_droitsE1_S2)} (droits)</strong>`,
+                etape2_detail_e2: `${formatCurrency(s1_partTaxableE_S2)} - ${formatCurrency(abattE2)} (abatt.) = ${formatCurrency(s1_baseTaxableE2_S2)} (base) -> <strong>${formatCurrency(s1_droitsE2_S2)} (droits)</strong>`,
+                etape2_droitsE1: s1_droitsE1_S2,
+                etape2_droitsE2: s1_droitsE2_S2,
+                etape2_total: s1_droitsE1_S2 + s1_droitsE2_S2,
+                
+                total: (s1_droitsE1_S1 + s1_droitsE2_S1) + (s1_droitsE1_S2 + s1_droitsE2_S2)
+            };
+
+            // --- Scénario 2 : Mme décède 1ère ---
+            const s2_valeurUsufruit = getValeurUsufruit(ageM);
+            const s2_valeurNP = 1 - s2_valeurUsufruit;
+            const s2_partTaxableE_S1 = (actifMme * s2_valeurNP) / 2;
+            const s2_baseTaxableE1_S1 = Math.max(0, s2_partTaxableE_S1 - abattE1);
+            const s2_baseTaxableE2_S1 = Math.max(0, s2_partTaxableE_S1 - abattE2);
+            const s2_droitsE1_S1 = calculerImpot(s2_baseTaxableE1_S1);
+            const s2_droitsE2_S1 = calculerImpot(s2_baseTaxableE2_S1);
+
+            const s2_partTaxableE_S2 = actifM / 2; // PP
+            const s2_baseTaxableE1_S2 = Math.max(0, s2_partTaxableE_S2 - abattE1);
+            const s2_baseTaxableE2_S2 = Math.max(0, s2_partTaxableE_S2 - abattE2);
+            const s2_droitsE1_S2 = calculerImpot(s2_baseTaxableE1_S2);
+            const s2_droitsE2_S2 = calculerImpot(s2_baseTaxableE2_S2);
+
+            s2 = {
+                titre: `Scénario 2 : Madame décède en premier (Survivant M., ${ageM} ans)`,
+                etape1_titre: `1. Droits Succ. Mme (NP ${formatPercent(s2_valeurNP)})`,
+                etape1_detail_part: `Part taxable (NP) par enfant: ${formatCurrency(s2_partTaxableE_S1)}`,
+                etape1_detail_e1: `${formatCurrency(s2_partTaxableE_S1)} - ${formatCurrency(abattE1)} (abatt.) = ${formatCurrency(s2_baseTaxableE1_S1)} (base) -> <strong>${formatCurrency(s2_droitsE1_S1)} (droits)</strong>`,
+                etape1_detail_e2: `${formatCurrency(s2_partTaxableE_S1)} - ${formatCurrency(abattE2)} (abatt.) = ${formatCurrency(s2_baseTaxableE2_S1)} (base) -> <strong>${formatCurrency(s2_droitsE2_S1)} (droits)</strong>`,
+                etape1_droitsE1: s2_droitsE1_S1,
+                etape1_droitsE2: s2_droitsE2_S1,
+                etape1_total: s2_droitsE1_S1 + s2_droitsE2_S1,
+
+                etape2_titre: `2. Droits Succ. M. (PP sur ${formatCurrency(actifM)})`,
+                etape2_detail_part: `Part taxable (PP) par enfant: ${formatCurrency(s2_partTaxableE_S2)}`,
+                etape2_detail_e1: `${formatCurrency(s2_partTaxableE_S2)} - ${formatCurrency(abattE1)} (abatt.) = ${formatCurrency(s2_baseTaxableE1_S2)} (base) -> <strong>${formatCurrency(s2_droitsE1_S2)} (droits)</strong>`,
+                etape2_detail_e2: `${formatCurrency(s2_partTaxableE_S2)} - ${formatCurrency(abattE2)} (abatt.) = ${formatCurrency(s2_baseTaxableE2_S2)} (base) -> <strong>${formatCurrency(s2_droitsE2_S2)} (droits)</strong>`,
+                etape2_droitsE1: s2_droitsE1_S2,
+                etape2_droitsE2: s2_droitsE2_S2,
+                etape2_total: s2_droitsE1_S2 + s2_droitsE2_S2,
+                
+                total: (s2_droitsE1_S1 + s2_droitsE2_S1) + (s2_droitsE1_S2 + s2_droitsE2_S2)
+            };
+            
+            return { s1, s2, abattE1, abattE2 };
+        }
+
+        /**
+         * Calcule les droits pour l'option 1/4 Pleine Propriété
+         */
+        function calc_1_4_PP(actifM, actifMme, abattE1, abattE2, ageMme, ageM) {
+            let s1 = {}, s2 = {};
+            const partPP = 1/4;
+            const partEnfants = 1 - partPP;
+
+            // --- Scénario 1 : M. décède 1er ---
+            const s1_partSurvivant_S1 = actifM * partPP;
+            const s1_partTaxableE_S1 = (actifM * partEnfants) / 2; // PP
+            const s1_baseTaxableE1_S1 = Math.max(0, s1_partTaxableE_S1 - abattE1);
+            const s1_baseTaxableE2_S1 = Math.max(0, s1_partTaxableE_S1 - abattE2);
+            const s1_droitsE1_S1 = calculerImpot(s1_baseTaxableE1_S1);
+            const s1_droitsE2_S1 = calculerImpot(s1_baseTaxableE2_S1);
+            
+            const s1_actifMme_S2 = actifMme + s1_partSurvivant_S1; // Patrimoine Mme + 1/4 M.
+            const s1_partTaxableE_S2 = s1_actifMme_S2 / 2; // PP
+            const s1_baseTaxableE1_S2 = Math.max(0, s1_partTaxableE_S2 - abattE1);
+            const s1_baseTaxableE2_S2 = Math.max(0, s1_partTaxableE_S2 - abattE2);
+            const s1_droitsE1_S2 = calculerImpot(s1_baseTaxableE1_S2);
+            const s1_droitsE2_S2 = calculerImpot(s1_baseTaxableE2_S2);
+
+            s1 = {
+                titre: `Scénario 1 : Monsieur décède en premier (Survivante Mme, ${ageMme} ans)`,
+                etape1_titre: `1. Droits Succ. M. (PP ${formatPercent(partEnfants)})`,
+                etape1_detail_part: `Part taxable (PP) par enfant: ${formatCurrency(s1_partTaxableE_S1)}`,
+                etape1_detail_e1: `${formatCurrency(s1_partTaxableE_S1)} - ${formatCurrency(abattE1)} (abatt.) = ${formatCurrency(s1_baseTaxableE1_S1)} (base) -> <strong>${formatCurrency(s1_droitsE1_S1)} (droits)</strong>`,
+                etape1_detail_e2: `${formatCurrency(s1_partTaxableE_S1)} - ${formatCurrency(abattE2)} (abatt.) = ${formatCurrency(s1_baseTaxableE2_S1)} (base) -> <strong>${formatCurrency(s1_droitsE2_S1)} (droits)</strong>`,
+                etape1_droitsE1: s1_droitsE1_S1,
+                etape1_droitsE2: s1_droitsE2_S1,
+                etape1_total: s1_droitsE1_S1 + s1_droitsE2_S1,
+
+                etape2_titre: `2. Droits Succ. Mme (PP sur ${formatCurrency(s1_actifMme_S2)})`,
+                etape2_detail_part: `Part taxable (PP) par enfant: ${formatCurrency(s1_partTaxableE_S2)}`,
+                etape2_detail_e1: `${formatCurrency(s1_partTaxableE_S2)} - ${formatCurrency(abattE1)} (abatt.) = ${formatCurrency(s1_baseTaxableE1_S2)} (base) -> <strong>${formatCurrency(s1_droitsE1_S2)} (droits)</strong>`,
+                etape2_detail_e2: `${formatCurrency(s1_partTaxableE_S2)} - ${formatCurrency(abattE2)} (abatt.) = ${formatCurrency(s1_baseTaxableE2_S2)} (base) -> <strong>${formatCurrency(s1_droitsE2_S2)} (droits)</strong>`,
+                etape2_droitsE1: s1_droitsE1_S2,
+                etape2_droitsE2: s1_droitsE2_S2,
+                etape2_total: s1_droitsE1_S2 + s1_droitsE2_S2,
+                
+                total: (s1_droitsE1_S1 + s1_droitsE2_S1) + (s1_droitsE1_S2 + s1_droitsE2_S2)
+            };
+
+            // --- Scénario 2 : Mme décède 1ère ---
+            const s2_partSurvivant_S1 = actifMme * partPP;
+            const s2_partTaxableE_S1 = (actifMme * partEnfants) / 2; // PP
+            const s2_baseTaxableE1_S1 = Math.max(0, s2_partTaxableE_S1 - abattE1);
+            const s2_baseTaxableE2_S1 = Math.max(0, s2_partTaxableE_S1 - abattE2);
+            const s2_droitsE1_S1 = calculerImpot(s2_baseTaxableE1_S1);
+            const s2_droitsE2_S1 = calculerImpot(s2_baseTaxableE2_S1);
+
+            const s2_actifM_S2 = actifM + s2_partSurvivant_S1; // Patrimoine M. + 1/4 Mme.
+            const s2_partTaxableE_S2 = s2_actifM_S2 / 2; // PP
+            const s2_baseTaxableE1_S2 = Math.max(0, s2_partTaxableE_S2 - abattE1);
+            const s2_baseTaxableE2_S2 = Math.max(0, s2_partTaxableE_S2 - abattE2);
+            const s2_droitsE1_S2 = calculerImpot(s2_baseTaxableE1_S2);
+            const s2_droitsE2_S2 = calculerImpot(s2_baseTaxableE2_S2);
+
+            s2 = {
+                titre: `Scénario 2 : Madame décède en premier (Survivant M., ${ageM} ans)`,
+                etape1_titre: `1. Droits Succ. Mme (PP ${formatPercent(partEnfants)})`,
+                etape1_detail_part: `Part taxable (PP) par enfant: ${formatCurrency(s2_partTaxableE_S1)}`,
+                etape1_detail_e1: `${formatCurrency(s2_partTaxableE_S1)} - ${formatCurrency(abattE1)} (abatt.) = ${formatCurrency(s2_baseTaxableE1_S1)} (base) -> <strong>${formatCurrency(s2_droitsE1_S1)} (droits)</strong>`,
+                etape1_detail_e2: `${formatCurrency(s2_partTaxableE_S1)} - ${formatCurrency(abattE2)} (abatt.) = ${formatCurrency(s2_baseTaxableE2_S1)} (base) -> <strong>${formatCurrency(s2_droitsE2_S1)} (droits)</strong>`,
+                etape1_droitsE1: s2_droitsE1_S1,
+                etape1_droitsE2: s2_droitsE2_S1,
+                etape1_total: s2_droitsE1_S1 + s2_droitsE2_S1,
+
+                etape2_titre: `2. Droits Succ. M. (PP sur ${formatCurrency(s2_actifM_S2)})`,
+                etape2_detail_part: `Part taxable (PP) par enfant: ${formatCurrency(s2_partTaxableE_S2)}`,
+                etape2_detail_e1: `${formatCurrency(s2_partTaxableE_S2)} - ${formatCurrency(abattE1)} (abatt.) = ${formatCurrency(s2_baseTaxableE1_S2)} (base) -> <strong>${formatCurrency(s2_droitsE1_S2)} (droits)</strong>`,
+                etape2_detail_e2: `${formatCurrency(s2_partTaxableE_S2)} - ${formatCurrency(abattE2)} (abatt.) = ${formatCurrency(s2_baseTaxableE2_S2)} (base) -> <strong>${formatCurrency(s2_droitsE2_S2)} (droits)</strong>`,
+                etape2_droitsE1: s2_droitsE1_S2,
+                etape2_droitsE2: s2_droitsE2_S2,
+                etape2_total: s2_droitsE1_S2 + s2_droitsE2_S2,
+                
+                total: (s2_droitsE1_S1 + s2_droitsE2_S1) + (s2_droitsE1_S2 + s2_droitsE2_S2)
+            };
+            
+            return { s1, s2, abattE1, abattE2 };
+        }
+
+        /**
+         * Calcule les droits pour l'option 1/3 Pleine Propriété
+         */
+        function calc_1_3_PP(actifM, actifMme, abattE1, abattE2, ageMme, ageM) {
+            let s1 = {}, s2 = {};
+            const partPP = 1/3;
+            const partEnfants = 1 - partPP;
+
+            // --- Scénario 1 : M. décède 1er ---
+            const s1_partSurvivant_S1 = actifM * partPP;
+            const s1_partTaxableE_S1 = (actifM * partEnfants) / 2; // PP
+            const s1_baseTaxableE1_S1 = Math.max(0, s1_partTaxableE_S1 - abattE1);
+            const s1_baseTaxableE2_S1 = Math.max(0, s1_partTaxableE_S1 - abattE2);
+            const s1_droitsE1_S1 = calculerImpot(s1_baseTaxableE1_S1);
+            const s1_droitsE2_S1 = calculerImpot(s1_baseTaxableE2_S1);
+            
+            const s1_actifMme_S2 = actifMme + s1_partSurvivant_S1; // Patrimoine Mme + 1/3 M.
+            const s1_partTaxableE_S2 = s1_actifMme_S2 / 2; // PP
+            const s1_baseTaxableE1_S2 = Math.max(0, s1_partTaxableE_S2 - abattE1);
+            const s1_baseTaxableE2_S2 = Math.max(0, s1_partTaxableE_S2 - abattE2);
+            const s1_droitsE1_S2 = calculerImpot(s1_baseTaxableE1_S2);
+            const s1_droitsE2_S2 = calculerImpot(s1_baseTaxableE2_S2);
+
+            s1 = {
+                titre: `Scénario 1 : Monsieur décède en premier (Survivante Mme, ${ageMme} ans)`,
+                etape1_titre: `1. Droits Succ. M. (PP ${formatPercent(partEnfants)})`,
+                etape1_detail_part: `Part taxable (PP) par enfant: ${formatCurrency(s1_partTaxableE_S1)}`,
+                etape1_detail_e1: `${formatCurrency(s1_partTaxableE_S1)} - ${formatCurrency(abattE1)} (abatt.) = ${formatCurrency(s1_baseTaxableE1_S1)} (base) -> <strong>${formatCurrency(s1_droitsE1_S1)} (droits)</strong>`,
+                etape1_detail_e2: `${formatCurrency(s1_partTaxableE_S1)} - ${formatCurrency(abattE2)} (abatt.) = ${formatCurrency(s1_baseTaxableE2_S1)} (base) -> <strong>${formatCurrency(s1_droitsE2_S1)} (droits)</strong>`,
+                etape1_droitsE1: s1_droitsE1_S1,
+                etape1_droitsE2: s1_droitsE2_S1,
+                etape1_total: s1_droitsE1_S1 + s1_droitsE2_S1,
+
+                etape2_titre: `2. Droits Succ. Mme (PP sur ${formatCurrency(s1_actifMme_S2)})`,
+                etape2_detail_part: `Part taxable (PP) par enfant: ${formatCurrency(s1_partTaxableE_S2)}`,
+                etape2_detail_e1: `${formatCurrency(s1_partTaxableE_S2)} - ${formatCurrency(abattE1)} (abatt.) = ${formatCurrency(s1_baseTaxableE1_S2)} (base) -> <strong>${formatCurrency(s1_droitsE1_S2)} (droits)</strong>`,
+                etape2_detail_e2: `${formatCurrency(s1_partTaxableE_S2)} - ${formatCurrency(abattE2)} (abatt.) = ${formatCurrency(s1_baseTaxableE2_S2)} (base) -> <strong>${formatCurrency(s1_droitsE2_S2)} (droits)</strong>`,
+                etape2_droitsE1: s1_droitsE1_S2,
+                etape2_droitsE2: s1_droitsE2_S2,
+                etape2_total: s1_droitsE1_S2 + s1_droitsE2_S2,
+                
+                total: (s1_droitsE1_S1 + s1_droitsE2_S1) + (s1_droitsE1_S2 + s1_droitsE2_S2)
+            };
+
+            // --- Scénario 2 : Mme décède 1ère ---
+            const s2_partSurvivant_S1 = actifMme * partPP;
+            const s2_partTaxableE_S1 = (actifMme * partEnfants) / 2; // PP
+            const s2_baseTaxableE1_S1 = Math.max(0, s2_partTaxableE_S1 - abattE1);
+            const s2_baseTaxableE2_S1 = Math.max(0, s2_partTaxableE_S1 - abattE2);
+            const s2_droitsE1_S1 = calculerImpot(s2_baseTaxableE1_S1);
+            const s2_droitsE2_S1 = calculerImpot(s2_baseTaxableE2_S1);
+
+            const s2_actifM_S2 = actifM + s2_partSurvivant_S1; // Patrimoine M. + 1/3 Mme.
+            const s2_partTaxableE_S2 = s2_actifM_S2 / 2; // PP
+            const s2_baseTaxableE1_S2 = Math.max(0, s2_partTaxableE_S2 - abattE1);
+            const s2_baseTaxableE2_S2 = Math.max(0, s2_partTaxableE_S2 - abattE2);
+            const s2_droitsE1_S2 = calculerImpot(s2_baseTaxableE1_S2);
+            const s2_droitsE2_S2 = calculerImpot(s2_baseTaxableE2_S2);
+
+            s2 = {
+                titre: `Scénario 2 : Madame décède en premier (Survivant M., ${ageM} ans)`,
+                etape1_titre: `1. Droits Succ. Mme (PP ${formatPercent(partEnfants)})`,
+                etape1_detail_part: `Part taxable (PP) par enfant: ${formatCurrency(s2_partTaxableE_S1)}`,
+                etape1_detail_e1: `${formatCurrency(s2_partTaxableE_S1)} - ${formatCurrency(abattE1)} (abatt.) = ${formatCurrency(s2_baseTaxableE1_S1)} (base) -> <strong>${formatCurrency(s2_droitsE1_S1)} (droits)</strong>`,
+                etape1_detail_e2: `${formatCurrency(s2_partTaxableE_S1)} - ${formatCurrency(abattE2)} (abatt.) = ${formatCurrency(s2_baseTaxableE2_S1)} (base) -> <strong>${formatCurrency(s2_droitsE2_S1)} (droits)</strong>`,
+                etape1_droitsE1: s2_droitsE1_S1,
+                etape1_droitsE2: s2_droitsE2_S1,
+                etape1_total: s2_droitsE1_S1 + s2_droitsE2_S1,
+
+                etape2_titre: `2. Droits Succ. M. (PP sur ${formatCurrency(s2_actifM_S2)})`,
+                etape2_detail_part: `Part taxable (PP) par enfant: ${formatCurrency(s2_partTaxableE_S2)}`,
+                etape2_detail_e1: `${formatCurrency(s2_partTaxableE_S2)} - ${formatCurrency(abattE1)} (abatt.) = ${formatCurrency(s2_baseTaxableE1_S2)} (base) -> <strong>${formatCurrency(s2_droitsE1_S2)} (droits)</strong>`,
+                etape2_detail_e2: `${formatCurrency(s2_partTaxableE_S2)} - ${formatCurrency(abattE2)} (abatt.) = ${formatCurrency(s2_baseTaxableE2_S2)} (base) -> <strong>${formatCurrency(s2_droitsE2_S2)} (droits)</strong>`,
+                etape2_droitsE1: s2_droitsE1_S2,
+                etape2_droitsE2: s2_droitsE2_S2,
+                etape2_total: s2_droitsE1_S2 + s2_droitsE2_S2,
+                
+                total: (s2_droitsE1_S1 + s2_droitsE2_S1) + (s2_droitsE1_S2 + s2_droitsE2_S2)
+            };
+            
+            return { s1, s2, abattE1, abattE2 };
+        }
+        
+        /**
+         * Calcule les droits pour l'option 1/4 PP + 3/4 Usufruit
+         */
+        function calc_1_4_PP_3_4_USU(actifM, actifMme, abattE1, abattE2, ageMme, ageM) {
+            let s1 = {}, s2 = {};
+            const partPP = 1/4;
+            const partUSU = 1 - partPP;
+
+            // --- Scénario 1 : M. décède 1er ---
+            const s1_partSurvivant_PP_S1 = actifM * partPP;
+            const s1_partSurvivant_USU_S1 = actifM * partUSU;
+            
+            const s1_valeurUsufruit = getValeurUsufruit(ageMme);
+            const s1_valeurNP = 1 - s1_valeurUsufruit;
+            
+            const s1_partTaxableE_S1 = (s1_partSurvivant_USU_S1 * s1_valeurNP) / 2; // NP sur 3/4
+            const s1_baseTaxableE1_S1 = Math.max(0, s1_partTaxableE_S1 - abattE1);
+            const s1_baseTaxableE2_S1 = Math.max(0, s1_partTaxableE_S1 - abattE2);
+            const s1_droitsE1_S1 = calculerImpot(s1_baseTaxableE1_S1);
+            const s1_droitsE2_S1 = calculerImpot(s1_baseTaxableE2_S1);
+            
+            const s1_actifMme_S2 = actifMme + s1_partSurvivant_PP_S1; // Patrimoine Mme + 1/4 M. (PP)
+            const s1_partTaxableE_S2 = s1_actifMme_S2 / 2; // PP
+            const s1_baseTaxableE1_S2 = Math.max(0, s1_partTaxableE_S2 - abattE1);
+            const s1_baseTaxableE2_S2 = Math.max(0, s1_partTaxableE_S2 - abattE2);
+            const s1_droitsE1_S2 = calculerImpot(s1_baseTaxableE1_S2);
+            const s1_droitsE2_S2 = calculerImpot(s1_baseTaxableE2_S2);
+
+            s1 = {
+                titre: `Scénario 1 : Monsieur décède en premier (Survivante Mme, ${ageMme} ans)`,
+                etape1_titre: `1. Droits Succ. M. (NP ${formatPercent(s1_valeurNP)} sur ${formatPercent(partUSU)})`,
+                etape1_detail_part: `Part taxable (NP) par enfant: ${formatCurrency(s1_partTaxableE_S1)}`,
+                etape1_detail_e1: `${formatCurrency(s1_partTaxableE_S1)} - ${formatCurrency(abattE1)} (abatt.) = ${formatCurrency(s1_baseTaxableE1_S1)} (base) -> <strong>${formatCurrency(s1_droitsE1_S1)} (droits)</strong>`,
+                etape1_detail_e2: `${formatCurrency(s1_partTaxableE_S1)} - ${formatCurrency(abattE2)} (abatt.) = ${formatCurrency(s1_baseTaxableE2_S1)} (base) -> <strong>${formatCurrency(s1_droitsE2_S1)} (droits)</strong>`,
+                etape1_droitsE1: s1_droitsE1_S1,
+                etape1_droitsE2: s1_droitsE2_S1,
+                etape1_total: s1_droitsE1_S1 + s1_droitsE2_S1,
+
+                etape2_titre: `2. Droits Succ. Mme (PP sur ${formatCurrency(s1_actifMme_S2)})`,
+                etape2_detail_part: `Part taxable (PP) par enfant: ${formatCurrency(s1_partTaxableE_S2)}`,
+                etape2_detail_e1: `${formatCurrency(s1_partTaxableE_S2)} - ${formatCurrency(abattE1)} (abatt.) = ${formatCurrency(s1_baseTaxableE1_S2)} (base) -> <strong>${formatCurrency(s1_droitsE1_S2)} (droits)</strong>`,
+                etape2_detail_e2: `${formatCurrency(s1_partTaxableE_S2)} - ${formatCurrency(abattE2)} (abatt.) = ${formatCurrency(s1_baseTaxableE2_S2)} (base) -> <strong>${formatCurrency(s1_droitsE2_S2)} (droits)</strong>`,
+                etape2_droitsE1: s1_droitsE1_S2,
+                etape2_droitsE2: s1_droitsE2_S2,
+                etape2_total: s1_droitsE1_S2 + s1_droitsE2_S2,
+                
+                total: (s1_droitsE1_S1 + s1_droitsE2_S1) + (s1_droitsE1_S2 + s1_droitsE2_S2)
+            };
+
+            // --- Scénario 2 : Mme décède 1ère ---
+            const s2_partSurvivant_PP_S1 = actifMme * partPP;
+            const s2_partSurvivant_USU_S1 = actifMme * partUSU;
+            
+            const s2_valeurUsufruit = getValeurUsufruit(ageM);
+            const s2_valeurNP = 1 - s2_valeurUsufruit;
+
+            const s2_partTaxableE_S1 = (s2_partSurvivant_USU_S1 * s2_valeurNP) / 2; // NP sur 3/4
+            const s2_baseTaxableE1_S1 = Math.max(0, s2_partTaxableE_S1 - abattE1);
+            const s2_baseTaxableE2_S1 = Math.max(0, s2_partTaxableE_S1 - abattE2);
+            const s2_droitsE1_S1 = calculerImpot(s2_baseTaxableE1_S1);
+            const s2_droitsE2_S1 = calculerImpot(s2_baseTaxableE2_S1);
+
+            const s2_actifM_S2 = actifM + s2_partSurvivant_PP_S1; // Patrimoine M. + 1/4 Mme. (PP)
+            const s2_partTaxableE_S2 = s2_actifM_S2 / 2; // PP
+            const s2_baseTaxableE1_S2 = Math.max(0, s2_partTaxableE_S2 - abattE1);
+            const s2_baseTaxableE2_S2 = Math.max(0, s2_partTaxableE_S2 - abattE2);
+            const s2_droitsE1_S2 = calculerImpot(s2_baseTaxableE1_S2);
+            const s2_droitsE2_S2 = calculerImpot(s2_baseTaxableE2_S2);
+
+            s2 = {
+                titre: `Scénario 2 : Madame décède en premier (Survivant M., ${ageM} ans)`,
+                etape1_titre: `1. Droits Succ. Mme (NP ${formatPercent(s2_valeurNP)} sur ${formatPercent(partUSU)})`,
+                etape1_detail_part: `Part taxable (NP) par enfant: ${formatCurrency(s2_partTaxableE_S1)}`,
+                etape1_detail_e1: `${formatCurrency(s2_partTaxableE_S1)} - ${formatCurrency(abattE1)} (abatt.) = ${formatCurrency(s2_baseTaxableE1_S1)} (base) -> <strong>${formatCurrency(s2_droitsE1_S1)} (droits)</strong>`,
+                etape1_detail_e2: `${formatCurrency(s2_partTaxableE_S1)} - ${formatCurrency(abattE2)} (abatt.) = ${formatCurrency(s2_baseTaxableE2_S1)} (base) -> <strong>${formatCurrency(s2_droitsE2_S1)} (droits)</strong>`,
+                etape1_droitsE1: s2_droitsE1_S1,
+                etape1_droitsE2: s2_droitsE2_S1,
+                etape1_total: s2_droitsE1_S1 + s2_droitsE2_S1,
+
+                etape2_titre: `2. Droits Succ. M. (PP sur ${formatCurrency(s2_actifM_S2)})`,
+                etape2_detail_part: `Part taxable (PP) par enfant: ${formatCurrency(s2_partTaxableE_S2)}`,
+                etape2_detail_e1: `${formatCurrency(s2_partTaxableE_S2)} - ${formatCurrency(abattE1)} (abatt.) = ${formatCurrency(s2_baseTaxableE1_S2)} (base) -> <strong>${formatCurrency(s2_droitsE1_S2)} (droits)</strong>`,
+                etape2_detail_e2: `${formatCurrency(s2_partTaxableE_S2)} - ${formatCurrency(abattE2)} (abatt.) = ${formatCurrency(s2_baseTaxableE2_S2)} (base) -> <strong>${formatCurrency(s2_droitsE2_S2)} (droits)</strong>`,
+                etape2_droitsE1: s2_droitsE1_S2,
+                etape2_droitsE2: s2_droitsE2_S2,
+                etape2_total: s2_droitsE1_S2 + s2_droitsE2_S2,
+                
+                total: (s2_droitsE1_S1 + s2_droitsE2_S1) + (s2_droitsE1_S2 + s2_droitsE2_S2)
+            };
+            
+            return { s1, s2, abattE1, abattE2 };
+        }
+
+        /**
+         * Génère le HTML des résultats
+         */
+        function genererHTMLResultats(r) {
+            let conclusion = "";
+            let s1Class = "";
+            let s2Class = "";
+            const difference = Math.abs(r.s1.total - r.s2.total);
+
+            if (r.s1.total < r.s2.total) {
+                conclusion = `Scénario 1 (M. décède 1er) est ${formatCurrency(difference)} moins cher.`;
+                s1Class = "highlight-green";
+                s2Class = "highlight-red";
+            } else if (r.s2.total < r.s1.total) {
+                conclusion = `Scénario 2 (Mme décède 1ère) est ${formatCurrency(difference)} moins cher.`;
+                s1Class = "highlight-red";
+                s2Class = "highlight-green";
+            } else {
+                conclusion = "Les deux scénarios ont un coût fiscal identique.";
+                s1Class = "";
+                s2Class = "";
+            }
+
+            return `
+                <div class="bg-blue-50 border-l-4 border-blue-500 p-6 rounded-lg">
+                    <h2 class="text-2xl font-bold text-blue-800 mb-2">Bilan Comparatif</h2>
+                    <p class="text-lg">${conclusion}</p>
+                </div>
+                
+                <!-- Détail Scénario 1 -->
+                <div class="border border-gray-200 rounded-lg overflow-hidden shadow-lg">
+                    <h2 class="text-xl font-semibold text-gray-800 p-4 bg-gray-50 border-b">${r.s1.titre}</h2>
+                    <div class="p-4">
+                        <div class="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                            <h3 class="text-lg font-semibold mb-3 text-gray-700">Détail du Calcul (Scénario 1)</h3>
+                            <h4 class="font-semibold mt-2 text-gray-600">${r.s1.etape1_titre}</h4>
+                            <ul class="list-disc list-inside text-sm pl-4 text-gray-600 space-y-1 mt-1">
+                                <li>${r.s1.etape1_detail_part}</li>
+                                <li>Enfant 1: ${r.s1.etape1_detail_e1}</li>
+                                <li>Enfant 2: ${r.s1.etape1_detail_e2}</li>
+                            </ul>
+                            <h4 class="font-semibold mt-3 text-gray-600">${r.s1.etape2_titre}</h4>
+                            <ul class="list-disc list-inside text-sm pl-4 text-gray-600 space-y-1 mt-1">
+                                <li>${r.s1.etape2_detail_part}</li>
+                                <li>Enfant 1: ${r.s1.etape2_detail_e1}</li>
+                                <li>Enfant 2: ${r.s1.etape2_detail_e2}</li>
+                            </ul>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-700 mb-2">Tableau Récapitulatif (Scénario 1)</h3>
+                        <table class="w-full results-table mb-4">
+                            <thead>
+                                <tr>
+                                    <th>Étape</th>
+                                    <th>Enfant 1 (Abatt. ${formatCurrency(r.abattE1)})</th>
+                                    <th>Enfant 2 (Abatt. ${formatCurrency(r.abattE2)})</th>
+                                    <th>Total Étape</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>${r.s1.etape1_titre}</strong></td>
+                                    <td>${formatCurrency(r.s1.etape1_droitsE1)}</td>
+                                    <td>${formatCurrency(r.s1.etape1_droitsE2)}</td>
+                                    <td><strong>${formatCurrency(r.s1.etape1_total)}</strong></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>${r.s1.etape2_titre}</strong></td>
+                                    <td>${formatCurrency(r.s1.etape2_droitsE1)}</td>
+                                    <td>${formatCurrency(r.s1.etape2_droitsE2)}</td>
+                                    <td><strong>${formatCurrency(r.s1.etape2_total)}</strong></td>
+                                </tr>
+                                <tr class="${s1Class}">
+                                    <td colspan="3"><strong>TOTAL SCÉNARIO 1</strong></td>
+                                    <td><strong>${formatCurrency(r.s1.total)}</strong></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Détail Scénario 2 -->
+                <div class="border border-gray-200 rounded-lg overflow-hidden shadow-lg">
+                    <h2 class="text-xl font-semibold text-gray-800 p-4 bg-gray-50 border-b">${r.s2.titre}</h2>
+                    <div class="p-4">
+                         <div class="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                            <h3 class="text-lg font-semibold mb-3 text-gray-700">Détail du Calcul (Scénario 2)</h3>
+                            <h4 class="font-semibold mt-2 text-gray-600">${r.s2.etape1_titre}</h4>
+                            <ul class="list-disc list-inside text-sm pl-4 text-gray-600 space-y-1 mt-1">
+                                <li>${r.s2.etape1_detail_part}</li>
+                                <li>Enfant 1: ${r.s2.etape1_detail_e1}</li>
+                                <li>Enfant 2: ${r.s2.etape1_detail_e2}</li>
+                            </ul>
+                            <h4 class="font-semibold mt-3 text-gray-600">${r.s2.etape2_titre}</h4>
+                            <ul class="list-disc list-inside text-sm pl-4 text-gray-600 space-y-1 mt-1">
+                                <li>${r.s2.etape2_detail_part}</li>
+                                <li>Enfant 1: ${r.s2.etape2_detail_e1}</li>
+                                <li>Enfant 2: ${r.s2.etape2_detail_e2}</li>
+                            </ul>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-700 mb-2">Tableau Récapitulatif (Scénario 2)</h3>
+                        <table class="w-full results-table mb-4">
+                            <thead>
+                                <tr>
+                                    <th>Étape</th>
+                                    <th>Enfant 1 (Abatt. ${formatCurrency(r.abattE1)})</th>
+                                    <th>Enfant 2 (Abatt. ${formatCurrency(r.abattE2)})</th>
+                                    <th>Total Étape</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>${r.s2.etape1_titre}</strong></td>
+                                    <td>${formatCurrency(r.s2.etape1_droitsE1)}</td>
+                                    <td>${formatCurrency(r.s2.etape1_droitsE2)}</td>
+                                    <td><strong>${formatCurrency(r.s2.etape1_total)}</strong></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>${r.s2.etape2_titre}</strong></td>
+                                    <td>${formatCurrency(r.s2.etape2_droitsE1)}</td>
+                                    <td>${formatCurrency(r.s2.etape2_droitsE2)}</td>
+                                    <td><strong>${formatCurrency(r.s2.etape2_total)}</strong></td>
+                                </tr>
+                                <tr class="${s2Class}">
+                                    <td colspan="3"><strong>TOTAL SCÉNARIO 2</strong></td>
+                                    <td><strong>${formatCurrency(r.s2.total)}</strong></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+
+        /**
+         * Fonction principale qui orchestre le calcul et l'affichage
+         */
+        function calculerEtAfficher() {
+            // 1. Récupérer les valeurs des inputs
+            const communaute = parseFloat(document.getElementById('communaute').value) || 0;
+            const propreM = parseFloat(document.getElementById('propreM').value) || 0;
+            const propreMme = parseFloat(document.getElementById('propreMme').value) || 0;
+            const donationE1 = parseFloat(document.getElementById('donationE1').value) || 0;
+            const donationE2 = parseFloat(document.getElementById('donationE2').value) || 0;
+            const ageMmeSurvivante = parseInt(document.getElementById('ageMme').value) || 75;
+            const ageMrSurvivant = parseInt(document.getElementById('ageM').value) || 78;
+            const option = document.getElementById('optionSurvivant').value;
+
+            // 2. Calculer les actifs successoraux et abattements
+            const actifSuccessoralM = (communaute / 2) + propreM;
+            const actifSuccessoralMme = (communaute / 2) + propreMme;
+            
+            const abattementE1 = Math.max(0, 100000 - donationE1);
+            const abattementE2 = Math.max(0, 100000 - donationE2);
+
+            // 3. Appeler la bonne fonction de calcul en fonction de l'option
+            let results = {};
+            switch (option) {
+                case '100_USU':
+                    results = calc_100_USU(actifSuccessoralM, actifSuccessoralMme, abattementE1, abattementE2, ageMmeSurvivante, ageMrSurvivant);
+                    break;
+                case '1_4_PP':
+                     results = calc_1_4_PP(actifSuccessoralM, actifSuccessoralMme, abattementE1, abattementE2, ageMmeSurvivante, ageMrSurvivant);
+                    break;
+                case '1_3_PP':
+                     results = calc_1_3_PP(actifSuccessoralM, actifSuccessoralMme, abattementE1, abattementE2, ageMmeSurvivante, ageMrSurvivant);
+                    break;
+                case '1_4_PP_3_4_USU':
+                     results = calc_1_4_PP_3_4_USU(actifSuccessoralM, actifSuccessoralMme, abattementE1, abattementE2, ageMmeSurvivante, ageMrSurvivant);
+                    break;
+            }
+
+            // 4. Générer et afficher le HTML
+            const htmlResultats = genererHTMLResultats(results);
+            document.getElementById('results').innerHTML = htmlResultats;
+        }
+        
+        // --- ÉCOUTEURS D'ÉVÉNEMENTS ---
+        
+        // Lier la fonction au bouton
+        document.getElementById('calculateBtn').addEventListener('click', calculerEtAfficher);
+        
+        // Lancer un premier calcul au chargement de la page avec les valeurs par défaut
+        document.addEventListener('DOMContentLoaded', calculerEtAfficher);
+
+        // Gérer l'affichage des hypothèses
+        document.getElementById('toggleHypotheses').addEventListener('click', function() {
+            const hypothesesDiv = document.getElementById('hypotheses');
+            hypothesesDiv.classList.toggle('hidden');
+        });
+
+    </script>
+
+</body>
+</html>
